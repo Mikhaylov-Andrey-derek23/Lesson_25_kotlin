@@ -5,28 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".FirstFragment">
 
-    <ImageView
-        android:id="@+id/ivPicture"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPost"
         android:layout_width="match_parent"
-        android:layout_height="360dp" />
+        android:layout_height="match_parent" />
 
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:id="@+id/tvTitle"
-        android:layout_marginTop="50dp"
-        android:text="Tirle"/>
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="120dp"
-        android:id="@+id/tvdescription"
-        android:text="Description"/>
-
-
+0
 </FrameLayout>
