@@ -1,21 +1,22 @@
 package com.example.lesson_25
 
+
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
-object PostClient {
+object UserClient {
     private var retrofit: Retrofit? = null
 
-    fun getPostsService(): PostService {
+    fun getUsersService(): UsersService {
         if (retrofit == null) {
             retrofit = Retrofit.Builder()
-                .baseUrl("https://api.slingacademy.com")
+                .baseUrl("https://reqres.in")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
 
         }
-        return retrofit!!.create(PostService::class.java)
+        return retrofit!!.create(UsersService::class.java)
 
     }
 }

@@ -7,23 +7,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.example.lesson_25.PostClient.getPostsService
+import com.example.lesson_25.UserClient.getUsersService
 import com.example.lesson_25.databinding.FragmentFirstBinding
-import io.reactivex.rxjava3.core.Observable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class FirstFragment : Fragment() {
     private var bidding: FragmentFirstBinding? = null
-    private var adapter: PostAdapter? = null
-    private var mainPost: MainPost? = null
-    private var offset: Int = 0
-    private var postService: PostService? = null
+    private var adapter: UserAdapter? = null
+    private var mainUsers: MainUsers? = null
+    private var page: Int = 1
+    private var usersService: UsersService? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,44 +33,44 @@ class FirstFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        postService = getPostsService()
-        val posts = CoroutineScope(Dispatchers.IO).async {
-            postService?.getPicture(limit = 3, offset = offset)
+        usersService = getUsersService()
+        val users = CoroutineScope(Dispatchers.IO).async {
+            usersService?.getPicture(page = page)
         }
         CoroutineScope(Dispatchers.IO).launch {
-            mainPost = posts.await()
+            mainUsers = users.await()
             withContext(Dispatchers.Main) {
-                initPostAdapter()
+                initUsersAdapter()
             }
 
         }
     }
 
-    private fun initPostAdapter() {
-        adapter = PostAdapter()
+    private fun initUsersAdapter() {
+        adapter = UserAdapter()
         bidding?.rvPost?.adapter = adapter
         bidding?.rvPost?.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        adapter?.posts = mainPost!!.photos.toMutableList()
+        adapter?.users = mainUsers!!.data.toMutableList()
         bidding?.rvPost?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 val llm = bidding?.rvPost?.layoutManager as LinearLayoutManager
 
                 val lastVisiblePost = llm.findLastCompletelyVisibleItemPosition()
 
-                if (lastVisiblePost == adapter!!.posts.size - 1) {
+                if (lastVisiblePost == adapter!!.users.size - 1) {
 
-                    val previousSize = adapter!!.posts.size
-                    offset = adapter!!.posts.size
+                    val previousSize = adapter!!.users.size
+                    page = 2
 
-                    val newPosts = CoroutineScope(Dispatchers.IO).async {
-                        postService?.getPicture(limit = 3, offset = offset)
+                    val newUsers = CoroutineScope(Dispatchers.IO).async {
+                        usersService?.getPicture(page=page)
                     }
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        adapter?.posts?.addAll(newPosts.await()!!.photos)
+                        adapter?.users?.addAll(newUsers.await()!!.data)
                         withContext(Dispatchers.Main) {
-                            adapter?.notifyItemRangeInserted(previousSize, 3)
+                            adapter?.notifyItemRangeInserted(previousSize, 6)
                         }
                     }
 
@@ -82,4 +80,5 @@ class FirstFragment : Fragment() {
 
 
     }
+
 }

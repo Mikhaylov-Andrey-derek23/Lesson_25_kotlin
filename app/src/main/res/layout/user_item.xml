@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="320dp"
+    android:layout_height="470dp"
     tools:context=".FirstFragment">
 
     <ImageView
@@ -15,9 +14,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:id="@+id/tvTitle"
+        android:id="@+id/tvName"
         android:layout_marginTop="50dp"
-        android:text="Tirle"/>
+        android:text="Name"/>
 
 
     <TextView
@@ -25,8 +24,16 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="120dp"
-        android:id="@+id/tvdescription"
-        android:text="Description"/>
+        android:id="@+id/rvSecondName"
+        android:text="SecondName"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="190dp"
+        android:id="@+id/rvEmail"
+        android:text="Email"/>
 
 
 </FrameLayout>
