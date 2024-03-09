@@ -1,7 +1,9 @@
 package com.example.lesson_25
 
+import com.google.gson.annotations.SerializedName
+
 data class Users (
-    val first_name:String,
+    @SerializedName("first_name") val first_name:String,
     val last_name: String,
     val email: String,
     val avatar: String,
