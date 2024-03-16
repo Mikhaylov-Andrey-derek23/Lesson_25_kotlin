@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.lesson_25.databinding.PostItemBinding
+import com.example.lesson_25.retrofit.Post
 
 class PostAdapter: RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
@@ -24,7 +25,7 @@ class PostAdapter: RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
     }
 
     inner class PostViewHolder(val binding:PostItemBinding ) : RecyclerView.ViewHolder(binding.root){
-        fun bind(post:Post){
+        fun bind(post: Post){
             binding.apply {
                 tvTitle.text = post.title
                 Glide.with(binding.root.context).load(post.url).into(ivPicture)

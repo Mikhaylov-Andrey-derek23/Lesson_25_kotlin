@@ -1,8 +1,7 @@
-package com.example.lesson_25
+package com.example.lesson_25.retrofit
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 
 object PostClient {
     private var retrofit: Retrofit? = null
