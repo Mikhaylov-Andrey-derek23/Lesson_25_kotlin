@@ -78,12 +78,13 @@ class FirstFragment : Fragment() {
 
     private suspend fun initPostAdapter() {
         adapter = PostAdapter()
+        adapter?.posts = getPostsFromDB(0, 10)!!.toMutableList()
         bidding?.rvPost?.adapter = adapter
         bidding?.rvPost?.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 //        adapter?.posts = listOf(Post("https://api.slingacademy.com/public/sample-photos/1.jpeg", "", "")).toMutableList()
-        adapter?.posts = getPostsFromDB(0, 10)!!.toMutableList()
-        adapter?.notifyItemRangeInserted(0, 3)
+
+//        adapter?.notifyItemRangeInserted(0, 3)
         bidding?.rvPost?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 val llm = bidding?.rvPost?.layoutManager as LinearLayoutManager
