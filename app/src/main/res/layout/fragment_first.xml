@@ -3,12 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FirstFragment">
+    tools:context=".main.view.MainFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPost"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-0
+
 </FrameLayout>
