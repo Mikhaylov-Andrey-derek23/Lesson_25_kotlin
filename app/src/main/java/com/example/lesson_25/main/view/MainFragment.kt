@@ -1,14 +1,19 @@
-package com.example.lesson_25
+package com.example.lesson_25.main.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.lesson_25.App
+import com.example.lesson_25.PostAdapter
 import com.example.lesson_25.retrofit.PostClient.getPostsService
 import com.example.lesson_25.databinding.FragmentFirstBinding
+import com.example.lesson_25.main.viewModel.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -18,15 +23,15 @@ import com.example.lesson_25.retrofit.MainPost
 import com.example.lesson_25.retrofit.Post
 import com.example.lesson_25.retrofit.PostService
 import com.example.lesson_25.retrofit.toPostDB
-import com.example.lesson_25.room.PostDB
 import com.example.lesson_25.room.toPost
 
-class FirstFragment : Fragment() {
+class MainFragment : Fragment() {
     private var bidding: FragmentFirstBinding? = null
     private var adapter: PostAdapter? = null
     private var mainPost: MainPost? = null
     private var offset: Int = 0
     private var postService: PostService? = null
+    private var viewModel: MainViewModel? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,47 +43,50 @@ class FirstFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        postService = getPostsService()
-        val posts = CoroutineScope(Dispatchers.IO).async {
-            if((requireActivity().applicationContext as App).postDao?.getPosts()?.size!! == 0){
-                postService?.getPicture(limit = 136, offset = offset)
-            }else{
-                MainPost(listOf())
-            }
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        observePostLiveData()
+        observePostLiveDBData()
+       viewModel?.getPostFromNetwork(136, 0)
+    }
 
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            mainPost = posts.await()
-            (requireActivity().applicationContext as App).postDao?.savePosts(mainPost!!.photos.map {
-                post -> post.toPostDB()
-            })
+    private  fun observePostLiveData(){
+        viewModel?.postLiveData?.observe(viewLifecycleOwner){
 
-            withContext(Dispatchers.Main) {
-                initPostAdapter()
-            }
-
+            viewModel?.getPostFromDB(offset, 1)
         }
     }
 
 
 
-    private suspend fun getPostsFromDB(offset:Int, limit:Int):List<Post>?{
-        val postDbDefault = CoroutineScope(Dispatchers.IO).async {
-            (requireActivity().applicationContext as App).postDao?.getPosts()
-        }
-        val resultPost =  CoroutineScope(Dispatchers.IO).async {
-            val post = postDbDefault.await()
+//    private suspend fun getPostsFromDB(offset:Int, limit:Int):List<Post>?{
+//        val postDbDefault = CoroutineScope(Dispatchers.IO).async {
+//            (requireActivity().applicationContext as App).postDao?.getPosts()
+//        }
+//        val resultPost =  CoroutineScope(Dispatchers.IO).async {
+//            val post = postDbDefault.await()
+//
+//            post?.dropLast(post.size - (offset+limit))?.map{it.toPost()}
+//        }
+//        val finelData = resultPost.await()
+//        return finelData
+//
+//    }
 
-            post?.dropLast(post.size - (offset+limit))?.map{it.toPost()}
-        }
-        val finelData = resultPost.await()
-        return finelData
+    private  fun observePostLiveDBData(){
+        viewModel?.postLiveDBData?.observe(viewLifecycleOwner){post ->
+            if(adapter == null){
+                initPostAdapter(post)
+            } else{
+                val previousSize = adapter!!.posts.size
+                adapter?.posts?.addAll(post)
+                adapter?.notifyItemRangeInserted(previousSize, 3)
+            }
 
+        }
     }
-
-    private suspend fun initPostAdapter() {
+    private  fun initPostAdapter(posts:List<Post>) {
         adapter = PostAdapter()
-        adapter?.posts = getPostsFromDB(0, 10)!!.toMutableList()
+        adapter?.posts = posts.toMutableList()
         bidding?.rvPost?.adapter = adapter
         bidding?.rvPost?.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -93,19 +101,14 @@ class FirstFragment : Fragment() {
 
                 if (lastVisiblePost == adapter!!.posts.size - 1) {
 
-                    val previousSize = adapter!!.posts.size
+//                    val previousSize = adapter!!.posts.size
                     offset = adapter!!.posts.size
 
 //                    val newPosts = CoroutineScope(Dispatchers.IO).async {
 //                        postService?.getPicture(limit = 3, offset = offset)
 //                    }
+                    viewModel?.getPostFromDB(offset, 1)
 
-                    CoroutineScope(Dispatchers.IO).launch {
-                        adapter?.posts = getPostsFromDB(offset, 10)!!.toMutableList()
-                        withContext(Dispatchers.Main) {
-                            adapter?.notifyItemRangeInserted(previousSize, 3)
-                        }
-                    }
 
                 }
             }

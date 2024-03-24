@@ -7,5 +7,5 @@ interface PostService {
 
     @GET("v1/sample-data/photos")
 
-    suspend fun getPicture(@Query("limit") limit:Int, @Query("offset") offset:Int): MainPost
+    suspend fun getPostForNetwork(@Query("limit") limit:Int, @Query("offset") offset:Int): MainPost
 }
